@@ -1,18 +1,23 @@
 package project1;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Board {
-	private int max_dimension = 10;
-	char unopenedBox = '#'; //regular view of the box 
-	char openBox = 'X'; // view that will show if you hit a boat
-	char [] letters = {' ','A','B','C','D','E','F','G','H','I'};
-	char board[][];	
+	final static int max_dimension = 10;
+
+	final static char miss = 'M';
+	final static char hit = 'H';
+	public static char unopenedBox = '~'; //regular view of the box 
+	public static char openBox = 'X'; // view that will show if you hit a boat
+	static char [] letters = {' ','A','B','C','D','E','F','G','H','I'};
+	public static char board[][];	
 	
 	Board(int max_dimension,char unopenedBox, char openBox){
 		
-		this.max_dimension = max_dimension;
-		this.unopenedBox = unopenedBox;
-		this.openBox = openBox;
+		
+		Board.unopenedBox = unopenedBox;
+		Board.openBox = openBox;
 		board = new char [max_dimension][max_dimension];
 		
 		//Inicialization of the matrix with the default values
@@ -36,7 +41,7 @@ public class Board {
 	}
 	
 	
-	public void printBoard() {
+	public static void printBoard() {
 		
 		//Prints the whole matrix to console
 		for(int i=0; i<max_dimension;i++)
@@ -50,17 +55,17 @@ public class Board {
 		
 	}
 	
-	public int letterToNumber(char col)
-	{
+	public static int letterToNumber(char col)
+	{	
+		//Searches the letter inside of the dictionarie and returns it's position
 		int h = 0;
 		for (int i = 0; i<letters.length;i++)
-		{	System.out.println(letters[i]);
-			System.out.println(col);
+		{	//System.out.println(letters[i]);
+			//System.out.println(col);
 			if(letters[i] == col)
-			{	
-				
-				h=i+1;
-				return i+1;
+			{					
+				h=i;
+				return i;
 			}
 			else if(i == letters.length)
 			{
@@ -72,32 +77,44 @@ public class Board {
 		}
 		return h;
 	}
-	public void showBoat() {
-		
-		int row;
-		char col;
-		int column;
-		//Code that asks for a row to shoot a boat
-		Scanner fila = new Scanner(System.in);
-		System.out.println("Row to shoot");
-		row = fila.nextInt();
-		if(row > max_dimension)
-		{
-			System.out.println("The value of your row is incorrect");
-		}
-		System.out.println("Name Accepted" + row);	
-		//Asks for a col to shoot a boat
-		Scanner columna = new Scanner(System.in);
-		System.out.println("Col to shoot");
-		//col = columna.next();
-		col = columna.next().charAt(0);		
-		System.out.println("Name Accepted" + col);		
-		column =letterToNumber(col);
-		System.out.print( "Hi i'm column" + column);
-		board[row][column] = openBox;
+	public static void showBoat(int row, int col) {		
+	
+		board[row][col] = openBox;
 		printBoard();
 		
 	}
-	
+	public static boolean collide(int row,int col,List<Boat> boatsIA)
+	{	
+		//Searchs in the list of boats of the IA if the position we're shooting is occupied
+		//This function is used by the player
+		boolean isBoat = false;
+		for(int i=0;i<boatsIA.size();i++)
+		{			
+			if(boatsIA.get(i).row == row && boatsIA.get(i).column == col)
+			{
+				isBoat=true;
+				return isBoat;
+			}
+		}
+			
+		return isBoat;
+		
+	}
+	public static boolean collideIA(int row,int col,List<Boat> boats)
+	{
+		//Searchs in the list of boats of the player if there's any boat in the position.
+		//Function used by the IA 
+		boolean isBoatIA = false;
+		for(int i=0;i<boats.size();i++)
+		{			
+			if(boats.get(i).row == row && boats.get(i).column == col)
+			{
+				isBoatIA=true;
+				return isBoatIA;
+			}
+		}
+			
+		return isBoatIA;
+	}
 	
 }
