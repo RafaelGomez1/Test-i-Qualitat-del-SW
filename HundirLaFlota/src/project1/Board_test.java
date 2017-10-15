@@ -10,9 +10,9 @@ public class Board_test {
 	@Test
 	public void test() {
 		
-		Board b = new Board(10,'~', 'X');		
+		Board b = new Board('~', 'X');		
 		b.printBoard();		
-		b.showBoat();
+		b.showBoat(0, 0);
 		
 	}
 

@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Board {
 	final static int max_dimension = 10;
-
+	final static char border = '/';
 	final static char miss = 'M';
 	final static char hit = 'H';
 	public static char unopenedBox = '~'; //regular view of the box 
@@ -13,7 +13,7 @@ public class Board {
 	static char [] letters = {' ','A','B','C','D','E','F','G','H','I'};
 	public static char board[][];	
 	
-	Board(int max_dimension,char unopenedBox, char openBox){
+	Board(char unopenedBox, char openBox){
 		
 		
 		Board.unopenedBox = unopenedBox;
@@ -57,7 +57,7 @@ public class Board {
 	
 	public static int letterToNumber(char col)
 	{	
-		//Searches the letter inside of the dictionarie and returns it's position
+		//Searches the letter inside of the dictionary and returns it's position
 		int h = 0;
 		for (int i = 0; i<letters.length;i++)
 		{	//System.out.println(letters[i]);
