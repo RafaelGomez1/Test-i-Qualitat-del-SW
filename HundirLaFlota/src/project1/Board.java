@@ -8,6 +8,7 @@ public class Board {
 	final static char border = '/';
 	final static char miss = 'M';
 	final static char hit = 'H';
+	final static char barquito = 'B';
 	public static char unopenedBox = '~'; //regular view of the box 
 	public static char openBox = 'X'; // view that will show if you hit a boat
 	static char [] letters = {' ','A','B','C','D','E','F','G','H','I'};
@@ -48,7 +49,7 @@ public class Board {
 		{
 			for(int j=0;j<max_dimension;j++)
 			{
-				System.out.print(board[i][j] + "\t");
+				System.out.print(Board.board[i][j] + "\t");
 			}
 			System.out.println("\n");
 		}
@@ -78,42 +79,36 @@ public class Board {
 		return h;
 	}
 	public static void showBoat(int row, int col) {		
-	
-		board[row][col] = openBox;
+		
+		System.out.println("Putos Cubanos");
+		System.out.println(Board.board[row][col]);
+		Board.board[row][col] = Board.openBox;
 		printBoard();
 		
 	}
-	public static boolean collide(int row,int col,List<Boat> boatsIA)
+	public static boolean collide(int row,int col,char[][] boardIA)
 	{	
 		//Searchs in the list of boats of the IA if the position we're shooting is occupied
 		//This function is used by the player
 		boolean isBoat = false;
-		for(int i=0;i<boatsIA.size();i++)
-		{			
-			if(boatsIA.get(i).row == row && boatsIA.get(i).column == col)
-			{
-				isBoat=true;
-				return isBoat;
-			}
-		}
+		
+		if(boardIA[row][col] == barquito)
+		{
+			isBoat = true;			
+		}		
 			
 		return isBoat;
 		
 	}
-	public static boolean collideIA(int row,int col,List<Boat> boats)
+	public static boolean collideIA(int row,int col, char[][]boardPlayer)
 	{
 		//Searchs in the list of boats of the player if there's any boat in the position.
 		//Function used by the IA 
-		boolean isBoatIA = false;
-		for(int i=0;i<boats.size();i++)
-		{			
-			if(boats.get(i).row == row && boats.get(i).column == col)
-			{
-				isBoatIA=true;
-				return isBoatIA;
-			}
-		}
-			
+		boolean isBoatIA = false;		
+		if(boardPlayer[row][col] == barquito)
+		{
+			isBoatIA = true;			
+		}			
 		return isBoatIA;
 	}
 	

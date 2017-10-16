@@ -10,50 +10,61 @@ public class Player {
 	
 	
 	
-	public static void shoot(List <Boat> boatsIA)
+	public int[] shoot(char[][] boardIA)
 	{	
-		
+		//Function used by the player in order to shoot down the enemy's boats
 		boolean isBoat = false;
+		int ret [] = new int [3];
 		int row;
 		int column=0;
 		char col = ' ';
+		int hit = 0;
+		placesShot = initialitzacionBorder(placesShot);
 		boolean done = false;
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Row you want to shoot at");
 		row = sc.nextInt();
-		while(row > Board.max_dimension)
+		if(row> Board.max_dimension)
 		{
-			System.out.println("The value of row is incorrect");
-			System.out.println("Row you want to shoot at");
-			row = sc.nextInt();
-		}			
-		while(!done)
-		{
-			System.out.println("Col you want to shoot at");
-			col = sc.nextLine().charAt(0);	
-			for(int i=0;i<Board.letters.length;i++)
+			while(row > Board.max_dimension)
 			{
-				if(Board.letters[i] == col)
-				{
-					column = Board.letterToNumber(col);
-					done = true;
-				}
-				
+				System.out.println("The value of row is incorrect");
+				System.out.println("Row you want to shoot at");
+				row = sc.nextInt();
 			}
-			System.out.println("The value of Col is incorrect");
 		}
-		isBoat = Board.collide(row,column,boatsIA);
+		System.out.println("Col you want to shoot at");
+		col = sc.next().charAt(0);	
+		column = Board.letterToNumber(col);
+		System.out.println("hi i'm column " + column);
+		//Error control of the col argument
+		while(column > Board.max_dimension || column <=0)
+		{
+			System.out.println("Error the value is incorrect");
+			System.out.println("Inser the row of the boat");
+			col = sc.next().charAt(0);	
+			column = Board.letterToNumber(col);
+		}		
+		isBoat = Board.collide(row,column,boardIA);
 		
 		if(isBoat)
 		{
-			//placesShot[row][col] = Board.hit;
-			Board.showBoat(row,col);
-			System.out.println("Direct hit");
+			System.out.println("NICE! That was a direct hit");
+			placesShot[row][column] = Board.hit;
+			hit = 1;			
 		}	
-		System.out.println("You Missed");
-		//else placesShot[row][col] = Board.miss;
+		else  if(!isBoat)
+			{
+				System.out.println("You Missed");
+				placesShot[row][column] = Board.miss;				
+			}
+		ret[0] = hit;
+		ret[1] = row;
+		ret[2] = column;
+		return ret;
+		
 	}
-	public static void ShootIA(List<Boat> boats)
+	public static int[] shootIA(char[][] boardPlayer)
 	{	
 		int row = 1;
 		int col = 1;
@@ -61,6 +72,9 @@ public class Player {
 		int j = 1;
 		boolean isBoatIA= false;
 		boolean valorHit = false;
+		int hit = 0;
+		int[] ret = new int [3];
+		char [][]	placesShot = new char [Board.max_dimension][Board.max_dimension];
 		placesShot = initialitzacionBorder(placesShot);
 		//Checking if we already hit something in order to hit the adjacents slots
 		
@@ -80,6 +94,7 @@ public class Player {
 							valorHit = true;
 							break;
 						}
+						//Posible error
 						else if (placesShot[i-2][j] == Board.border && placesShot[i+1][j] != Board.hit && placesShot[i+1][j] !=Board.miss)
 						{
 							row = i+1;
@@ -139,29 +154,37 @@ public class Player {
 		//Random generation of the position the IA will shoot if we don't find a Hit
 		if(!valorHit)
 		{
-			row = ThreadLocalRandom.current().nextInt(1,11);
-			col = ThreadLocalRandom.current().nextInt(1,11);				
+			row = ThreadLocalRandom.current().nextInt(1,10);
+			col = ThreadLocalRandom.current().nextInt(1,10);				
 		}
 		//Checking if there's a boat in the position and updating the list and the board.
-		isBoatIA =Board.collideIA(row, col, boats);		
+		isBoatIA =Board.collideIA(row, col, boardPlayer);		
 		if(isBoatIA)
 		{
 			placesShot[row][col]= Board.hit;
-			Board.board[row][col] = Board.hit;
-			
-		}
+			System.out.println("The Enemy hit one of your boats");
+			hit = 1;
+		}		
+		ret[0] = hit;
+		ret[1] = row;
+		ret[2] = col;
+		return ret;
 	}
 	public static char[][] initialitzacionBorder(char [][] placesShot)
 	{
+		placesShot = new char[Board.max_dimension+1][Board.max_dimension+1];
 		//Initialitzation of the borders of the list placeShot in order to dont count those positions when trying to find hits.
-		for (int i = 0;i<Board.max_dimension;i++)
+		for (int i = 0;i<Board.max_dimension+1;i++)
 		{
 			placesShot[i][0] = Board.border;
+			placesShot[i][10] = Board.border;
+			
 		}
-		for (int i = 0; i< Board.max_dimension;i++)
+		for (int i = 0; i< Board.max_dimension+1;i++)
 		{
 			placesShot[0][i] = Board.border;
-		}
+			placesShot[10][i] = Board.border;
+		}	
 		return placesShot;
 	}
 }
