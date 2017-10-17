@@ -34,10 +34,11 @@ public class Boat {
 		boardPlayer = new char [Board.max_dimension+1][Board.max_dimension+1];
 		boardPlayer= Player.initialitzacionBorder(boardPlayer);
 		int i = 0;
+		Scanner sc = new Scanner(System.in);
 		for(i=0;i<max_boats;i++)
 		{
 			//Initialization of the type of the boat
-			Scanner sc = new Scanner(System.in);
+			
 			System.out.println("Insert your type of boat");
 			typeOfBoat = sc.nextInt();
 			
@@ -48,7 +49,7 @@ public class Boat {
 				typeOfBoat = sc.nextInt();
 				
 			}
-			//Initialitzation of the argument lenght depending from the typeOfBoat
+			//Initialitzation of the argument length depending from the typeOfBoat
 			switch (typeOfBoat)
 			{
 				case 1: lenght = 2;
@@ -609,8 +610,8 @@ public class Boat {
 								boardIA[row][columna+3] = Board.barquito;
 							
 						}
-						else if((boardIA[row][columna-1] != Board.barquito || boardIA[row][columna-1] != Board.border ) && (boardIA[row][columna-2] == Board.barquito || boardIA[row][columna-2] == Board.border) 
-								&& boardIA[row][columna+1] != Board.barquito && boardIA[row][columna+2] != Board.barquito)
+						else if((boardIA[row][columna-1] != Board.barquito && boardIA[row][columna-1] != Board.border ) && (boardIA[row][columna-2] == Board.barquito || boardIA[row][columna-2] == Board.border) 
+								&& (boardIA[row][columna+1] != Board.barquito && boardIA[row][columna+1] != Board.border ) && (boardIA[row][columna+2] != Board.barquito && boardIA[row][columna+2] != Board.border))
 						{
 							boardIA[row][columna-1] = Board.barquito;
 							boardIA[row][columna] = Board.barquito;
@@ -640,7 +641,21 @@ public class Boat {
 		return boardIA;
 		
 	}
-	
+	public static int countBoats(char [][] boats)		
+	{
+		int boat = 0;
+		for(int i=1;i<Board.max_dimension+1;i++)
+		{
+			for(int j =1; j<Board.max_dimension+1;j++)
+			{
+				if(boats[i][j] == Board.barquito)
+				{
+					boat+=1;
+				}
+			}
+		}
+		return boat;
+	}
 	
 	
 	

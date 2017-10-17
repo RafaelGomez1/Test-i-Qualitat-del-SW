@@ -161,8 +161,7 @@ public class Player {
 		isBoatIA =Board.collideIA(row, col, boardPlayer);		
 		if(isBoatIA)
 		{
-			placesShot[row][col]= Board.hit;
-			System.out.println("The Enemy hit one of your boats");
+			placesShot[row][col]= Board.hit;			
 			hit = 1;
 		}		
 		ret[0] = hit;
