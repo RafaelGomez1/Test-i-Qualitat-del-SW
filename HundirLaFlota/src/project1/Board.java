@@ -21,35 +21,39 @@ public class Board {
 		Board.openBox = openBox;
 		board = new char [max_dimension][max_dimension];
 		
+		//Inicialization of the borders of the board
+				setBorders(board);
 		//Inicialization of the matrix with the default values
 		for(int i=1; i<max_dimension;i++) 
 			for(int j=1; j<max_dimension;j++) 
 				board[i][j]= unopenedBox;
-		//Inicialization of the first column with the numbers
-		//for(int i=1; i<max_dimension;i++)
-			board[1][0] = '1';
-			board[2][0] = '2';
-			board[3][0] = '3';
-			board[4][0] = '4';
-			board[5][0] = '5';
-			board[6][0] = '6';
-			board[7][0] = '7';
-			board[8][0] = '8';
-			board[9][0] = '9';
-		//Inicialization of the first row with the letters
-		for(int j=0;j<max_dimension;j++)
-			board[0][j] = letters[j];		
+		
+			
 	}
 	
-	
-	public static void printBoard() {
+	public static boolean setBorders(char[][]board)
+	{	
+		//Sets the borders of the board
+		boolean done = false;
+		for(int i = 1; i<max_dimension;i++)
+		{
+			board[i][0] = (char) ((char) i+48);
+		}
+		for(int j=0;j<max_dimension;j++)
+			board[0][j] = letters[j];	
+		done = true;
+		return done;
+		
+		
+	}
+	public static void printBoard(char [][] board) {
 		
 		//Prints the whole matrix to console
-		for(int i=0; i<max_dimension;i++)
+		for(int i=0; i<board.length;i++)
 		{
-			for(int j=0;j<max_dimension;j++)
+			for(int j=0;j<board.length;j++)
 			{
-				System.out.print(Board.board[i][j] + "\t");
+				System.out.print(board[i][j] + "\t");
 			}
 			System.out.println("\n");
 		}
@@ -58,11 +62,10 @@ public class Board {
 	
 	public static int letterToNumber(char col)
 	{	
-		//Searches the letter inside of the dictionary and returns it's position
+		//Searches the letter inside of the list and returns it's position
 		int h = 0;
 		for (int i = 0; i<letters.length;i++)
-		{	//System.out.println(letters[i]);
-			//System.out.println(col);
+		{	
 			if(letters[i] == col)
 			{					
 				h=i;
@@ -77,15 +80,8 @@ public class Board {
 				
 		}
 		return h;
-	}
-	public static void showBoat(int row, int col) {		
-		
-		System.out.println("Putos Cubanos");
-		System.out.println(Board.board[row][col]);
-		Board.board[row][col] = Board.openBox;
-		printBoard();
-		
-	}
+	}		
+	
 	public static boolean collide(int row,int col,char[][] boardIA)
 	{	
 		//Searchs in the list of boats of the IA if the position we're shooting is occupied
@@ -97,19 +93,7 @@ public class Board {
 			isBoat = true;			
 		}		
 			
-		return isBoat;
+		return isBoat;		
+	}
 		
-	}
-	public static boolean collideIA(int row,int col, char[][]boardPlayer)
-	{
-		//Searchs in the list of boats of the player if there's any boat in the position.
-		//Function used by the IA 
-		boolean isBoatIA = false;		
-		if(boardPlayer[row][col] == barquito)
-		{
-			isBoatIA = true;			
-		}			
-		return isBoatIA;
-	}
-	
 }

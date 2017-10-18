@@ -158,7 +158,7 @@ public class Player {
 			col = ThreadLocalRandom.current().nextInt(1,10);				
 		}
 		//Checking if there's a boat in the position and updating the list and the board.
-		isBoatIA =Board.collideIA(row, col, boardPlayer);		
+		isBoatIA =Board.collide(row, col, boardPlayer);		
 		if(isBoatIA)
 		{
 			placesShot[row][col]= Board.hit;			

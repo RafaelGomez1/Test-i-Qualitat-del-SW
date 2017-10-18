@@ -24,33 +24,46 @@ public class Boat {
 		this.lenght = lenght;
 		
 	}
-	
-	
-	public char[][] createBoats() 
-	{	
-		List<Boat> boats = new ArrayList<Boat>();
-		char aux;
-		char boardPlayer[][];
-		boardPlayer = new char [Board.max_dimension+1][Board.max_dimension+1];
-		boardPlayer= Player.initialitzacionBorder(boardPlayer);
-		int i = 0;
-		Scanner sc = new Scanner(System.in);
-		for(i=0;i<max_boats;i++)
+	public boolean isValidValue(int index)
+	{
+		//Checks if the values of both variables row and col are correct
+		boolean valid = false;
+		if(index < Board.max_dimension && index >= 1)
 		{
-			//Initialization of the type of the boat
-			
-			System.out.println("Insert your type of boat");
-			typeOfBoat = sc.nextInt();
-			
-			while(typeOfBoat < 1 || typeOfBoat >3)
-			{
-				System.out.println("Error the value is incorrect");
-				System.out.println("Insert your type of boat");
-				typeOfBoat = sc.nextInt();
-				
-			}
-			//Initialitzation of the argument length depending from the typeOfBoat
-			switch (typeOfBoat)
+			valid = true;
+		}
+		
+		return valid;
+	}
+	public boolean isValidVert(char vert)
+	{
+		//Checks if the value of vert is either of the two options we printed
+		boolean valid = false;
+		if(vert == 'Y' || vert == 'N')
+		{
+			valid = true;
+		}
+		return valid;
+	}
+	public boolean isValidType(int type)
+	{
+		//Checks if the value of type is correct
+		boolean valid = false;
+		if(type >=1 && type <=3)
+		{
+			valid = true;
+		}
+		return valid;
+	}
+	public int setLenght(int type)
+	{
+		//Sets the length of a boat according to his type
+		boolean valid = false;
+		int lenght = 0;
+		valid =isValidType(type);
+		if(valid)
+		{
+			switch (type)
 			{
 				case 1: lenght = 2;
 						break;
@@ -59,296 +72,109 @@ public class Boat {
 				case 3: lenght = 4;
 						break;
 			}
+			return lenght;
+		}
+		else lenght = -1;
+		return lenght;
+	}
+	public boolean isValidLenght(int lenght)
+	{
+		//Checks if the value of the length is correct
+		boolean valid = true;
+		if(lenght == -1)
+		{
+			valid = false;
+		}
+		return valid;
+	}
+	
+	
+	public char[][] createBoats() 
+	{			
+		char aux;
+		char boardPlayer[][];
+		boolean placed;
+		boolean isValid = false;
+		boolean isValidlenght= false;
+		boardPlayer = new char [Board.max_dimension+1][Board.max_dimension+1];
+		boardPlayer= Player.initialitzacionBorder(boardPlayer);
+		int i = 0;
+		Scanner sc = new Scanner(System.in);
+		for(i=0;i<max_boats;i++)
+		{
+			//Initialization of the type of the boat			
+			System.out.println("Insert your type of boat");
+			typeOfBoat = sc.nextInt();
+			isValid = isValidType(typeOfBoat);
+			
+			//Initialitzation of the argument lenght depending from the typeOfBoat
+			lenght = setLenght(typeOfBoat);
+			isValidlenght = isValidLenght(lenght);
+			while(!isValid && !isValidlenght)
+			{
+				System.out.println("Error the value is incorrect");
+				System.out.println("Please, insert your type of boat again");
+				typeOfBoat = sc.nextInt();
+				isValid = isValidType(typeOfBoat);
+				lenght = setLenght(typeOfBoat);
+				isValidlenght = isValidLenght(lenght);
+			}				
 			//Initialization of the row of the boat
 			System.out.println("Insert the row of the boat");
 			row = sc.nextInt();	
 			//Error control of the row argument
-			while(row > Board.max_dimension || row <=0)
+			isValid = isValidValue(row);
+			while(!isValid)
 			{
 				System.out.println("Error the value is incorrect");
-				System.out.println("Insert the row of the boat");
+				System.out.println("Please, insert the row of the boat again");
 				row = sc.nextInt();
-			}			
+				isValid = isValidValue(row);
+			}					
 			//Initialization of the col argument
 			System.out.println("Insert the col of the boat");
 			col = sc.next().charAt(0);	
 			column = Board.letterToNumber(col);
-			//Error control of the col argument
-			while(column > Board.max_dimension || column <=0)
+			//Error control of the col argument			
+			isValid = isValidValue(column);
+			while(!isValid)
 			{
 				System.out.println("Error the value is incorrect");
-				System.out.println("Insert the row of the boat");
+				System.out.println("Please, insert the row of the boat again");
 				col = sc.next().charAt(0);	
 				column = Board.letterToNumber(col);
+				isValid = isValidValue(column);
 			}		
-			
 			//Initialitzacion of both the vertical and the horizontal arguments
 			System.out.println("Do you want the boat to be placed vertically? Y/N");
 			aux = sc.next().charAt(0);
+			isValid=isValidVert(aux);
+			while(!isValid)
+			{
+				System.out.println("The character was wrong");
+				System.out.println("Do you want the boat to be placed vertically? Y/N");
+				aux = sc.next().charAt(0);
+				isValid=isValidVert(aux);
+			}
 			if(aux == 'Y')
 			{
 				vertical = true;
 			}
 			else vertical = false;		
+			//Function that checks if the position is correct and puts the boats at the matrix
+			placed = canPlaceBoats(row,column,typeOfBoat,vertical,boardPlayer);	
+			System.out.println("The value of placed is " + placed);
+			System.out.println("You have now " + i + " boats placed");		
 			
-			//Positioning of the boats in an alternative board that only contains their position to be checked when shoot
-			if(typeOfBoat == 1)
-			{
-				//Check if the position randomly generated is already occupied
-				if(boardPlayer[row][column] != Board.barquito)
-				{
-					if(vertical)
-					{	
-						//Checks if the slots above and below are locked and prints an error message
-						if ((boardPlayer[row-1][column] == Board.barquito || (boardPlayer[row-1][column] == Board.border) && (boardPlayer[row+1][column] == Board.barquito || boardPlayer[row+1][column] == Board.border)))
-						{
-							System.out.println("The col of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions over is free in order to put the second slot of the boat
-						else if(boardPlayer[row-1][column] != Board.border && boardPlayer[row-1][column] != Board.barquito)
-						{
-							boardPlayer[row][column] = Board.barquito;
-							boardPlayer[row-1][column] = Board.barquito;
-						}
-						//Checks if the position under is free in order to put the second slot of the boat
-						else if(boardPlayer[row+1][column] != Board.barquito && boardPlayer[row+1][column] != Board.border)
-							
-						{
-							boardPlayer[row][column] = Board.barquito;
-							boardPlayer[row+1][column] = Board.barquito;
-						}
-						
-					}else if(!vertical)
-					{	
-						//Checks if the position left and right are locked and sends an error message
-						if((boardPlayer[row][column-1] == Board.barquito || boardPlayer[row][column-1] == Board.border) && (boardPlayer[row][column+1] == Board.barquito || boardPlayer[row][column+1] == Board.border))
-						{
-							System.out.println("The row of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions at the left of the boat is free to put the second slot of the boat
-						else if(boardPlayer[row][column-1] != Board.border && boardPlayer[row][column-1] != Board.barquito)
-						{
-							boardPlayer[row][column] = Board.barquito;
-							boardPlayer[row][column-1] = Board.barquito;
-						}
-						//If the position at the left is blocked puts the remaining slot at the right
-						else if((boardPlayer[row][column-1] == Board.barquito || boardPlayer[row][column-1] == Board.border) && (boardPlayer[row][column+1] != Board.barquito && boardPlayer[row][column+1] != Board.border))
-						{
-							boardPlayer[row][column]= Board.barquito;
-							boardPlayer[row][column+1]= Board.barquito;
-							System.out.println("The row of this boat is incorrect, it collides with another boats");
-						}
-						//If the position at the right is blocked puts the remaining slot at the right
-						else if((boardPlayer[row][column+1] == Board.barquito || boardPlayer[row][column+1] == Board.border) && (boardPlayer[row][column-1] != Board.barquito && boardPlayer[row][column-1] != Board.border))
-						{
-							boardPlayer[row][column-1]= Board.barquito;
-							boardPlayer[row][column]= Board.barquito;
-							System.out.println("The row of this boat is incorrect, it collides with another boats");
-						}						
-					}	
-				
-				}else System.out.println("This position is already taken by another boat");
-					
-			}else if(typeOfBoat == 2)
-			{
-				
-				if(boardPlayer[row][column] != Board.barquito)
-				{	
-					//Checks if the positions over and under are free in order to put the second and third slots of the boat
-					if(vertical)
-					{	
-						//If the position under and over are locked, prints a message saying the value that's not correct
-						if ((boardPlayer[row-1][column] == Board.barquito || boardPlayer[row-1][column] == Board.border) && (boardPlayer[row+1][column] == Board.barquito || boardPlayer[row+1][column] == Board.border) )
-						{
-							System.out.println("The col of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions over and under are free to put 1 slot over and 1 slot under the main one
-						if(boardPlayer[row-1][column] != Board.border && boardPlayer[row-1][column] != Board.barquito && boardPlayer[row+1][column] != Board.border && boardPlayer[row+1][column] != Board.barquito)
-						{	
-							boardPlayer[row-1][column] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;							
-							boardPlayer[row+1][column] = Board.barquito;
-						}
-						//If the position over is locked, checks if the two positions under are free to place the 2 slots.
-						if((boardPlayer[row-1][column] == Board.border || boardPlayer[row-1][column] == Board.barquito) && (boardPlayer[row+1][column] != Board.barquito && boardPlayer[row+1][column] != Board.border)
-								&& (boardPlayer[row+2][column] != Board.barquito && boardPlayer[row+2][column] != Board.border))
-						{
-							boardPlayer[row][column] = Board.barquito;
-							boardPlayer[row+1][column] = Board.barquito;
-							boardPlayer[row+2][column] = Board.barquito;
-						}
-						//If the position under is locked, checks if the two positions over are free to place the 2 slots.
-						else if((boardPlayer[row+1][column] == Board.barquito || boardPlayer[row+1][column] == Board.border ) && boardPlayer[row-1][column] != Board.border && boardPlayer[row-1][column] != Board.barquito 
-								&& boardPlayer[row-2][column] != Board.border && boardPlayer[row-2][column] != Board.barquito)									
-						{
-							boardPlayer[row-2][column] = Board.barquito;
-							boardPlayer[row-1][column] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;
-						}						
-						
-						
-					}else if(!vertical)
-					{	
-						//If both, the position at the left and the position at the right are locked, send an error message
-						if((boardPlayer[row][column-1] == Board.barquito ||  boardPlayer[row][column-1] == Board.border) && boardPlayer[row][column+1] == Board.barquito)
-						{
-							System.out.println("The value of the row is incorrect, the boat will collide with other boats");
-						}		
-						//Checks if one position at left and one at the right of the main slot are free and puts a slot at each position
-						else if(boardPlayer[row][column-1] != Board.border && boardPlayer[row][column-1] != Board.barquito && boardPlayer[row][column+1] != Board.border	&& boardPlayer[row][column+1] != Board.barquito)
-						{	
-								boardPlayer[row][column-1] = Board.barquito;
-								boardPlayer[row][column] = Board.barquito;
-								boardPlayer[row][column+1] = Board.barquito;							
-						}
-						//Checks if the two positions at the left of the main one are free and puts a slot of the boat at each one
-						else if((boardPlayer[row][column-1] != Board.barquito && boardPlayer[row][column-1] != Board.border) && (boardPlayer[row][column+1]== Board.barquito) 
-								&& (boardPlayer[row][column-2] != Board.barquito && boardPlayer[row][col-2] != Board.border))
-						{
-							boardPlayer[row][column-2] = Board.barquito;
-							boardPlayer[row][column-1] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;
-						}
-						//If the position at the left is locked checks if the two position at the right of the main one are free to put a slot at each one
-						else if((boardPlayer[row][column-1] == Board.barquito || boardPlayer[row][column-1] == Board.border) && (boardPlayer[row][column+1] != Board.barquito && boardPlayer[row][column+1] != Board.border) && (boardPlayer[row][column+2] != Board.barquito 
-								&& boardPlayer[row][column+2] != Board.border ))
-						{
-							boardPlayer[row][column] = Board.barquito;
-							boardPlayer[row][column+1] = Board.barquito;
-							boardPlayer[row][column+2] = Board.barquito;							
-						}
-						//If the position at the right is locked, checks if the two positions at the left ae free to put one slot at each one
-						else if((boardPlayer[row][column+1] == Board.barquito || boardPlayer[row][column+1] == Board.border) && (boardPlayer[row][column-1] != Board.barquito && boardPlayer[row][column-1] != Board.border) && (boardPlayer[row][column-2] != Board.barquito 
-								&& boardPlayer[row][column-2] != Board.border ))
-						{
-							boardPlayer[row][column-2] = Board.barquito;
-							boardPlayer[row][column-1] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;							
-						}	
-						
-					}
-					
-				
-				}else System.out.println("This position is already taken by another boat");
-					
-			}
-			else if(typeOfBoat == 3)
-			{
-				if(boardPlayer[row][column] != Board.barquito)
-				{	
-					
-					//Checks if the two positions over and  one under are free in order to put the second,third and fourth slots of the boat
-					if(vertical)
-					{	
-						//If the position under and over are locked, prints a message saying the value that's not correct
-						if ((boardPlayer[row-1][column] == Board.barquito || boardPlayer[row-1][column] == Board.border) && boardPlayer[row+1][column] == Board.barquito )
-						{
-							System.out.println("The col of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions over and under are free to put 1 slot over and 1 slot under the main one
-						else if((boardPlayer[row-1][column] != Board.border && boardPlayer[row-1][column] != Board.barquito) && (boardPlayer[row+1][column] != Board.border && boardPlayer[row+1][column] != Board.barquito) && 
-								(boardPlayer[row-2][column] != Board.border && boardPlayer[row-2][column] != Board.barquito))
-						{	
-							boardPlayer[row-2][column] = Board.barquito;
-							boardPlayer[row-1][column] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;							
-							boardPlayer[row+1][column] = Board.barquito;
-						}
-						//If the position over is locked, checks if the three positions under are free to place the 3 slots.
-						if((boardPlayer[row-1][column] == Board.border || boardPlayer[row-1][column] == Board.barquito)&&(boardPlayer[row+1][column] != Board.barquito &&
-								boardPlayer[row+2][column] != Board.barquito && boardPlayer[row+3][column] != Board.barquito))					
-						{						
-								boardPlayer[row][column] = Board.barquito;
-								boardPlayer[row+1][column] = Board.barquito;
-								boardPlayer[row+2][column] = Board.barquito;
-								boardPlayer[row+3][column] = Board.barquito;							
-						}
-						//If the position under is locked, checks if the three positions over are free to place the 3 slots.
-						else if((boardPlayer[row+1][column] == Board.barquito) && (boardPlayer[row-1][column] != Board.border && boardPlayer[row-1][column] != Board.barquito)
-								&& (boardPlayer[row-2][column] != Board.border && boardPlayer[row-2][column] != Board.barquito)&&(boardPlayer[row-3][column] != Board.border && boardPlayer[row-3][column] != Board.barquito))								
-						{	
-							boardPlayer[row-3][column] = Board.barquito;
-							boardPlayer[row-2][column] = Board.barquito;
-							boardPlayer[row-1][column] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;
-						}			
-						//Checks if two positions under and one over are free to put the 3 slots left
-						else if((boardPlayer[row-1][column] != Board.border && boardPlayer[row-1][column] != Board.barquito) && (boardPlayer[row+1][column] != Board.border && boardPlayer[row+1][column] != Board.barquito) && 
-								(boardPlayer[row+2][column] != Board.border && boardPlayer[row+2][column] != Board.barquito))
-						{
-							boardPlayer[row-1][column] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;
-							boardPlayer[row+1][column] = Board.barquito;
-							boardPlayer[row+2][column] = Board.barquito;
-						}
-						
-					}else if(!vertical)
-					{	
-						//If both, the position at the left and the position at the right are locked, send an error message
-						if((boardPlayer[row][column-1] == Board.barquito ||  boardPlayer[row][column-1] == Board.border) && boardPlayer[row][column+1] == Board.barquito)
-						{
-							System.out.println("The value of the row is incorrect, the boat will collide with other boats");
-						}
-						//Checks if two position at left and one at the right of the main slot are free and puts a slot at each position
-						else if((boardPlayer[row][column-1] != Board.border && boardPlayer[row][column-1] != Board.barquito) 
-								&& (boardPlayer[row][column-2] != Board.border && boardPlayer[row][column-2] != Board.barquito)&& boardPlayer[row][column+1] != Board.border && boardPlayer[row][column+1] != Board.barquito)
-						{									
-								boardPlayer[row][column-2] = Board.barquito;
-								boardPlayer[row][column-1] = Board.barquito;
-								boardPlayer[row][column] = Board.barquito;
-								boardPlayer[row][column+1] = Board.barquito;							
-						}
-						// if the right position is locked, checks if the three positions at the left of the main one are free and puts a slot of the boat at each one
-						else if((boardPlayer[row][column-1] != Board.barquito && boardPlayer[row][column-1] != Board.border)&& ((boardPlayer[row][column+1]== Board.barquito) 
-								&& (boardPlayer[row][column-2] != Board.barquito && boardPlayer[row][column-2] != Board.border) && (boardPlayer[row][column-3] != Board.barquito && boardPlayer[row][column-3] != Board.border)))
-						{							
-								boardPlayer[row][column-3] = Board.barquito;
-								boardPlayer[row][column-2] = Board.barquito;
-								boardPlayer[row][column-1] = Board.barquito;
-								boardPlayer[row][column] = Board.barquito;
-							
-						}
-						//If the position at the left is locked checks if the three position at the right of the main one are free to put a slot at each one
-						else if((boardPlayer[row][column-1] == Board.barquito || boardPlayer[row][column-1] == Board.border)&& (boardPlayer[row][column+1] != Board.barquito && boardPlayer[row][column+1] != Board.border )
-								&& (boardPlayer[row][column+2] != Board.barquito && boardPlayer[row][column+2] != Board.border) && (boardPlayer[row][column+3] != Board.barquito && boardPlayer[row][column+3] != Board.border))
-						{							
-								boardPlayer[row][column] = Board.barquito;
-								boardPlayer[row][column+1] = Board.barquito;
-								boardPlayer[row][column+2] = Board.barquito;
-								boardPlayer[row][column+3] = Board.barquito;
-							
-						}
-						else if((boardPlayer[row][column-1] != Board.barquito || boardPlayer[row][column-1] != Board.border ) && (boardPlayer[row][column-2] == Board.barquito || boardPlayer[row][column-2] == Board.border) 
-								&& boardPlayer[row][column+1] != Board.barquito && boardPlayer[row][column+2] != Board.barquito)
-						{
-							boardPlayer[row][column-1] = Board.barquito;
-							boardPlayer[row][column] = Board.barquito;
-							boardPlayer[row][column+1] = Board.barquito;
-							boardPlayer[row][column+2] = Board.barquito;
-						}												
-						}	
-					}
-			}
-			//Boat b = new Boat(row,column,typeOfBoat,vertical,lenght);			
-			//boats.add(b);
-			//Clear the argument in order to avoid problems			
-			System.out.println("You have now " + i + " boats placed");
-			for(int ti=0; ti<Board.max_dimension+1;ti++)
-			{
-				for(int j=0; j<Board.max_dimension+1;j++)
-				{
-					System.out.print(boardPlayer[ti][j]+ "\t");
-				}
-				System.out.println("\n");
-			}
+			//Block of code that prints the board (Used to check)
+			Board.printBoard(boardPlayer);
 			
 		}
 		return boardPlayer;
 	}
 	public char[][] placeBoatsRandom()
 	{
-		//Generation of the boats done by the IA
-		List<Boat> boatsIA = new ArrayList<Boat>();
+		//Generation of the boats done by the IA		
 		char boardIA[][];
 		boardIA = new char [Board.max_dimension+1][Board.max_dimension+1];
 		boardIA = Player.initialitzacionBorder(boardIA);
@@ -356,293 +182,51 @@ public class Boat {
 		int row;
 		int columna;
 		boolean vert;
+		boolean placed= false;
+		boolean isValid;
 		int type;
 		int large = 0;
 		for(int i = 0; i<max_boats;i++)
 		{	
-			//Initialitzation of the arguments of a boat (done by the IA)
+			//Initialization of the arguments of a boat (done by the IA)				
+			//Just in case we check the IA creates the right values of row
 			row = ThreadLocalRandom.current().nextInt(1,10);
+			isValid = isValidType(row);
+			while(!isValid)				
+			{
+				row = ThreadLocalRandom.current().nextInt(1,10);
+			}
+			//Just in case we check the IA creates the right values of columna
 			columna = ThreadLocalRandom.current().nextInt(1,10);
+			isValid = isValidType(columna);
+			while(!isValid)				
+			{
+				columna = ThreadLocalRandom.current().nextInt(1,10);
+			}
+			//Just in case we check the IA creates the right values of type
 			type = ThreadLocalRandom.current().nextInt(1,4);
-			System.out.println("Hi my row is " + row);
-			System.out.println("Hi my col is " + columna);
-			System.out.println("Hi my type is " + type);
-			
+			isValid = isValidType(type);			
+			while(!isValid)				
+			{
+				type = ThreadLocalRandom.current().nextInt(1,4);
+			}		
+			//Initialization of the vert argument
 			if(i%2 ==0)
 			{
 				vert = true;
 			}
 			else vert = false;
 			System.out.println("Hi my vert is " + vert);
-			switch (type)
-			{
-				case 1: large = 2;
-						break;
-				case 2: large = 3;
-						break;
-				case 3: large = 4;
-						break;				
-			}
-			//Positioning of the boats in an alternative board that only contains their position to be checked when shoot
-			if(type == 1)
-			{
-				//Check if the position randomly generated is already occupied
-				if(boardIA[row][columna] != Board.barquito)
-				{
-					if(vert)
-					{	
-						//Checks if the slots above and below are locked and prints an error message
-						if ((boardIA[row-1][columna] == Board.barquito || (boardIA[row-1][columna] == Board.border) && (boardIA[row+1][columna] == Board.barquito || boardIA[row+1][columna] == Board.border)))
-						{
-							System.out.println("The col of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions over is free in order to put the second slot of the boat
-						else if(boardIA[row-1][columna] != Board.border && boardIA[row-1][columna] != Board.barquito)
-						{
-							boardIA[row][columna] = Board.barquito;
-							boardIA[row-1][columna] = Board.barquito;
-						}
-						//Checks if the position under is free in order to put the second slot of the boat
-						else if(boardIA[row+1][columna] != Board.barquito && boardIA[row+1][columna] != Board.border)
-							
-						{
-							boardIA[row][columna] = Board.barquito;
-							boardIA[row+1][columna] = Board.barquito;
-						}
-						
-					}else if(!vert)
-					{	
-						//Checks if the position left and right are locked and sends an error message
-						if((boardIA[row][columna-1] == Board.barquito || boardIA[row][columna-1] == Board.border) && (boardIA[row][columna+1] == Board.barquito || boardIA[row][columna+1] == Board.border))
-						{
-							System.out.println("The row of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions at the left of the boat is free to put the second slot of the boat
-						else if(boardIA[row][columna-1] != Board.border && boardIA[row][columna-1] != Board.barquito)
-						{
-							boardIA[row][columna] = Board.barquito;
-							boardIA[row][columna-1] = Board.barquito;
-						}
-						//If the position at the left is blocked puts the remaining slot at the right
-						else if((boardIA[row][columna-1] == Board.barquito || boardIA[row][columna-1] == Board.border) && (boardIA[row][columna+1] != Board.barquito && boardIA[row][columna+1] != Board.border))
-						{
-							boardIA[row][columna]= Board.barquito;
-							boardIA[row][columna+1]= Board.barquito;
-							System.out.println("The row of this boat is incorrect, it collides with another boats");
-						}
-						//If the position at the right is blocked puts the remaining slot at the right
-						else if((boardIA[row][columna+1] == Board.barquito || boardIA[row][columna+1] == Board.border) && (boardIA[row][columna-1] != Board.barquito && boardIA[row][columna-1] != Board.border))
-						{
-							boardIA[row][columna-1]= Board.barquito;
-							boardIA[row][columna]= Board.barquito;
-							System.out.println("The row of this boat is incorrect, it collides with another boats");
-						}						
-					}	
-				
-				}else System.out.println("This position is already taken by another boat");
-					
-			}else if(type == 2)
-			{
-				
-				if(boardIA[row][columna] != Board.barquito)
-				{	
-					//Checks if the positions over and under are free in order to put the second and third slots of the boat
-					if(vert)
-					{	
-						//If the position under and over are locked, prints a message saying the value that's not correct
-						if ((boardIA[row-1][columna] == Board.barquito || boardIA[row-1][columna] == Board.border) && (boardIA[row+1][columna] == Board.barquito || boardIA[row+1][columna] == Board.border) )
-						{
-							System.out.println("The col of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions over and under are free to put 1 slot over and 1 slot under the main one
-						if(boardIA[row-1][columna] != Board.border && boardIA[row-1][columna] != Board.barquito && boardIA[row+1][columna] != Board.border && boardIA[row+1][columna] != Board.barquito)
-						{	
-							boardIA[row-1][columna] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;							
-							boardIA[row+1][columna] = Board.barquito;
-						}
-						//If the position over is locked, checks if the two positions under are free to place the 2 slots.
-						if((boardIA[row-1][columna] == Board.border || boardIA[row-1][columna] == Board.barquito) && (boardIA[row+1][columna] != Board.barquito && boardIA[row+1][columna] != Board.border)
-								&& (boardIA[row+2][columna] != Board.barquito && boardIA[row+2][columna] != Board.border))
-						{
-							boardIA[row][columna] = Board.barquito;
-							boardIA[row+1][columna] = Board.barquito;
-							boardIA[row+2][columna] = Board.barquito;
-						}
-						//If the position under is locked, checks if the two positions over are free to place the 2 slots.
-						else if((boardIA[row+1][columna] == Board.barquito || boardIA[row+1][columna] == Board.border ) && boardIA[row-1][columna] != Board.border && boardIA[row-1][columna] != Board.barquito 
-								&& boardIA[row-2][columna] != Board.border && boardIA[row-2][columna] != Board.barquito)									
-						{
-							boardIA[row-2][columna] = Board.barquito;
-							boardIA[row-1][columna] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;
-						}						
-						
-						
-					}else if(!vert)
-					{	
-						//If both, the position at the left and the position at the right are locked, send an error message
-						if((boardIA[row][columna-1] == Board.barquito ||  boardIA[row][columna-1] == Board.border) && boardIA[row][columna+1] == Board.barquito)
-						{
-							System.out.println("The value of the row is incorrect, the boat will collide with other boats");
-						}		
-						//Checks if one position at left and one at the right of the main slot are free and puts a slot at each position
-						else if(boardIA[row][columna-1] != Board.border && boardIA[row][columna-1] != Board.barquito && boardIA[row][columna+1] != Board.border	&& boardIA[row][columna+1] != Board.barquito)
-						{	
-								boardIA[row][columna-1] = Board.barquito;
-								boardIA[row][columna] = Board.barquito;
-								boardIA[row][columna+1] = Board.barquito;							
-						}
-						//Checks if the two positions at the left of the main one are free and puts a slot of the boat at each one
-						else if((boardIA[row][columna-1] != Board.barquito && boardIA[row][columna-1] != Board.border) && (boardIA[row][columna+1]== Board.barquito) 
-								&& (boardIA[row][columna-2] != Board.barquito && boardIA[row][col-2] != Board.border))
-						{
-							boardIA[row][columna-2] = Board.barquito;
-							boardIA[row][columna-1] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;
-						}
-						//If the position at the left is locked checks if the two position at the right of the main one are free to put a slot at each one
-						else if((boardIA[row][columna-1] == Board.barquito || boardIA[row][columna-1] == Board.border) && (boardIA[row][columna+1] != Board.barquito && boardIA[row][columna+1] != Board.border) && (boardIA[row][columna+2] != Board.barquito 
-								&& boardIA[row][columna+2] != Board.border ))
-						{
-							boardIA[row][columna] = Board.barquito;
-							boardIA[row][columna+1] = Board.barquito;
-							boardIA[row][columna+2] = Board.barquito;							
-						}
-						//If the position at the right is locked, checks if the two positions at the left ae free to put one slot at each one
-						else if((boardIA[row][columna+1] == Board.barquito || boardIA[row][columna+1] == Board.border) && (boardIA[row][columna-1] != Board.barquito && boardIA[row][columna-1] != Board.border) && (boardIA[row][columna-2] != Board.barquito 
-								&& boardIA[row][columna-2] != Board.border ))
-						{
-							boardIA[row][columna-2] = Board.barquito;
-							boardIA[row][columna-1] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;							
-						}	
-						
-					}
-					
-				
-				}else System.out.println("This position is already taken by another boat");
-					
-			}
-			else if(type == 3)
-			{
-				if(boardIA[row][columna] != Board.barquito)
-				{	
-					
-					//Checks if the two positions over and  one under are free in order to put the second,third and fourth slots of the boat
-					if(vert)
-					{	
-						//If the position under and over are locked, prints a message saying the value that's not correct
-						if ((boardIA[row-1][columna] == Board.barquito || boardIA[row-1][columna] == Board.border) && boardIA[row+1][columna] == Board.barquito )
-						{
-							System.out.println("The col of this boat is incorrect, it collides with another boats");
-						}
-						//Checks if the positions over and under are free to put 1 slot over and 1 slot under the main one
-						else if((boardIA[row-1][columna] != Board.border && boardIA[row-1][columna] != Board.barquito) && (boardIA[row+1][columna] != Board.border && boardIA[row+1][columna] != Board.barquito) && 
-								(boardIA[row-2][columna] != Board.border && boardIA[row-2][columna] != Board.barquito))
-						{	
-							boardIA[row-2][columna] = Board.barquito;
-							boardIA[row-1][columna] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;							
-							boardIA[row+1][columna] = Board.barquito;
-						}
-						//If the position over is locked, checks if the three positions under are free to place the 3 slots.
-						if((boardIA[row-1][columna] == Board.border || boardIA[row-1][columna] == Board.barquito)&&(boardIA[row+1][columna] != Board.barquito &&
-								boardIA[row+2][columna] != Board.barquito && boardIA[row+3][columna] != Board.barquito))					
-						{						
-								boardIA[row][columna] = Board.barquito;
-								boardIA[row+1][columna] = Board.barquito;
-								boardIA[row+2][columna] = Board.barquito;
-								boardIA[row+3][columna] = Board.barquito;							
-						}
-						//If the position under is locked, checks if the three positions over are free to place the 3 slots.
-						else if((boardIA[row+1][columna] == Board.barquito) && (boardIA[row-1][columna] != Board.border && boardIA[row-1][columna] != Board.barquito)
-								&& (boardIA[row-2][columna] != Board.border && boardIA[row-2][columna] != Board.barquito)&&(boardIA[row-3][columna] != Board.border && boardIA[row-3][columna] != Board.barquito))								
-						{	
-							boardIA[row-3][columna] = Board.barquito;
-							boardIA[row-2][columna] = Board.barquito;
-							boardIA[row-1][columna] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;
-						}			
-						//Checks if two positions under and one over are free to put the 3 slots left
-						else if((boardIA[row-1][columna] != Board.border && boardIA[row-1][columna] != Board.barquito) && (boardIA[row+1][columna] != Board.border && boardIA[row+1][columna] != Board.barquito) && 
-								(boardIA[row+2][columna] != Board.border && boardIA[row+2][columna] != Board.barquito))
-						{
-							boardIA[row-1][columna] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;
-							boardIA[row+1][columna] = Board.barquito;
-							boardIA[row+2][columna] = Board.barquito;
-						}
-						
-					}else if(!vert)
-					{	
-						//If both, the position at the left and the position at the right are locked, send an error message
-						if((boardIA[row][columna-1] == Board.barquito ||  boardIA[row][columna-1] == Board.border) && boardIA[row][columna+1] == Board.barquito)
-						{
-							System.out.println("The value of the row is incorrect, the boat will collide with other boats");
-						}
-						//Checks if two position at left and one at the right of the main slot are free and puts a slot at each position
-						else if((boardIA[row][columna-1] != Board.border && boardIA[row][columna-1] != Board.barquito) 
-								&& (boardIA[row][columna-2] != Board.border && boardIA[row][columna-2] != Board.barquito)&& boardIA[row][columna+1] != Board.border && boardIA[row][columna+1] != Board.barquito)
-						{									
-								boardIA[row][columna-2] = Board.barquito;
-								boardIA[row][columna-1] = Board.barquito;
-								boardIA[row][columna] = Board.barquito;
-								boardIA[row][columna+1] = Board.barquito;							
-						}
-						// if the right position is locked, checks if the three positions at the left of the main one are free and puts a slot of the boat at each one
-						else if((boardIA[row][columna-1] != Board.barquito && boardIA[row][columna-1] != Board.border)&& ((boardIA[row][columna+1]== Board.barquito) 
-								&& (boardIA[row][columna-2] != Board.barquito && boardIA[row][columna-2] != Board.border) && (boardIA[row][columna-3] != Board.barquito && boardIA[row][columna-3] != Board.border)))
-						{							
-								boardIA[row][columna-3] = Board.barquito;
-								boardIA[row][columna-2] = Board.barquito;
-								boardIA[row][columna-1] = Board.barquito;
-								boardIA[row][columna] = Board.barquito;
-							
-						}
-						//If the position at the left is locked checks if the three position at the right of the main one are free to put a slot at each one
-						else if((boardIA[row][columna-1] == Board.barquito || boardIA[row][columna-1] == Board.border)&& (boardIA[row][columna+1] != Board.barquito && boardIA[row][columna+1] != Board.border )
-								&& (boardIA[row][columna+2] != Board.barquito && boardIA[row][columna+2] != Board.border) && (boardIA[row][columna+3] != Board.barquito && boardIA[row][columna+3] != Board.border))
-						{							
-								boardIA[row][columna] = Board.barquito;
-								boardIA[row][columna+1] = Board.barquito;
-								boardIA[row][columna+2] = Board.barquito;
-								boardIA[row][columna+3] = Board.barquito;
-							
-						}
-						else if((boardIA[row][columna-1] != Board.barquito && boardIA[row][columna-1] != Board.border ) && (boardIA[row][columna-2] == Board.barquito || boardIA[row][columna-2] == Board.border) 
-								&& (boardIA[row][columna+1] != Board.barquito && boardIA[row][columna+1] != Board.border ) && (boardIA[row][columna+2] != Board.barquito && boardIA[row][columna+2] != Board.border))
-						{
-							boardIA[row][columna-1] = Board.barquito;
-							boardIA[row][columna] = Board.barquito;
-							boardIA[row][columna+1] = Board.barquito;
-							boardIA[row][columna+2] = Board.barquito;
-						}												
-					}
-					
-				
-				}else System.out.println("This position is already taken by another boat");				
-			}			
-			/*			
-			Boat b = new Boat(row,columna,type,vert,large);		
-			System.out.println("Hi i'm the IA and my boat is at row" + row + "and col" + columna);
-			boatsIA.add(b);
-			*/
-			
-			for(int ti=0; ti<Board.max_dimension+1;ti++)
-			{
-				for(int j=0; j<Board.max_dimension+1;j++)
-				{
-					System.out.print(boardIA[ti][j]+ "\t");
-				}
-				System.out.println("\n");
-			}
+			large = setLenght(type);				
+			placed = canPlaceBoats(row,columna,type,vert,boardIA);	
+			//Print the board (just to check)
+			Board.printBoard(boardIA);
 		}			
 		return boardIA;
 		
 	}
 	public static int countBoats(char [][] boats)		
-	{
+	{	//Function that counts the number of boats at each board to later see if the game's over
 		int boat = 0;
 		for(int i=1;i<Board.max_dimension+1;i++)
 		{
@@ -656,8 +240,268 @@ public class Boat {
 		}
 		return boat;
 	}
-	
-	
-	
-	
+	public boolean canPlaceBoats(int row,int columna,int type,boolean vert,char[][] boats)
+	{
+		//Function that checks if you can position a boat at the point the user or the IA generated.
+		boolean placed = false;		
+		//Positioning of the boats in an alternative board that only contains their position to be checked when shoot
+		if(type == 1)
+		{
+			//Check if the position randomly generated is already occupied
+			if(boats[row][columna] != Board.barquito)
+			{
+				if(vert)
+				{	
+					//Checks if the slots above and below are locked and prints an error message
+					if ((boats[row-1][columna] == Board.barquito || (boats[row-1][columna] == Board.border) && (boats[row+1][columna] == Board.barquito || boats[row+1][columna] == Board.border)))
+					{
+						System.out.println("The col of this boat is incorrect, it collides with another boats");
+					}
+					//Checks if the positions over is free in order to put the second slot of the boat
+					else if(boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito)
+					{
+						boats[row][columna] = Board.barquito;
+						boats[row-1][columna] = Board.barquito;
+						placed = true;
+					}
+					//Checks if the position under is free in order to put the second slot of the boat
+					else if(boats[row+1][columna] != Board.barquito && boats[row+1][columna] != Board.border)
+						
+					{
+						boats[row][columna] = Board.barquito;
+						boats[row+1][columna] = Board.barquito;
+						placed = true;
+					}
+					
+				}else if(!vert)
+				{	
+					//Checks if the position left and right are locked and sends an error message
+					if((boats[row][columna-1] == Board.barquito || boats[row][columna-1] == Board.border) && (boats[row][columna+1] == Board.barquito || boats[row][columna+1] == Board.border))
+					{
+						System.out.println("The row of this boat is incorrect, it collides with another boats");
+					}
+					//Checks if the positions at the left of the boat is free to put the second slot of the boat
+					else if(boats[row][columna-1] != Board.border && boats[row][columna-1] != Board.barquito)
+					{
+						boats[row][columna] = Board.barquito;
+						boats[row][columna-1] = Board.barquito;
+						placed = true;
+					}
+					//If the position at the left is blocked puts the remaining slot at the right
+					else if((boats[row][columna-1] == Board.barquito || boats[row][columna-1] == Board.border) && (boats[row][columna+1] != Board.barquito && boats[row][columna+1] != Board.border))
+					{
+						boats[row][columna]= Board.barquito;
+						boats[row][columna+1]= Board.barquito;
+						placed = true;
+					}
+					//If the position at the right is blocked puts the remaining slot at the right
+					else if((boats[row][columna+1] == Board.barquito || boats[row][columna+1] == Board.border) && (boats[row][columna-1] != Board.barquito && boats[row][columna-1] != Board.border))
+					{
+						boats[row][columna-1]= Board.barquito;
+						boats[row][columna]= Board.barquito;
+						placed = true;
+					}						
+				}	
+			
+			}else System.out.println("This position is already taken by another boat");
+				
+		}else if(type == 2)
+		{
+			
+			if(boats[row][columna] != Board.barquito)
+			{	
+				//Checks if the positions over and under are free in order to put the second and third slots of the boat
+				if(vert)
+				{	
+					//If the position under and over are locked, prints a message saying the value that's not correct
+					if ((boats[row-1][columna] == Board.barquito || boats[row-1][columna] == Board.border) && (boats[row+1][columna] == Board.barquito || boats[row+1][columna] == Board.border) )
+					{
+						System.out.println("The col of this boat is incorrect, it collides with another boats");
+					}
+					//Checks if the positions over and under are free to put 1 slot over and 1 slot under the main one
+					if(boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito && boats[row+1][columna] != Board.border && boats[row+1][columna] != Board.barquito)
+					{	
+						boats[row-1][columna] = Board.barquito;
+						boats[row][columna] = Board.barquito;							
+						boats[row+1][columna] = Board.barquito;
+						placed = true;
+					}
+					//If the position over is locked, checks if the two positions under are free to place the 2 slots.
+					if((boats[row-1][columna] == Board.border || boats[row-1][columna] == Board.barquito) && (boats[row+1][columna] != Board.barquito && boats[row+1][columna] != Board.border)
+							&& (boats[row+2][columna] != Board.barquito && boats[row+2][columna] != Board.border))
+					{
+						boats[row][columna] = Board.barquito;
+						boats[row+1][columna] = Board.barquito;
+						boats[row+2][columna] = Board.barquito;
+						placed = true;
+					}
+					//If the position under is locked, checks if the two positions over are free to place the 2 slots.
+					else if((boats[row+1][columna] == Board.barquito || boats[row+1][columna] == Board.border ) && boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito 
+							&& boats[row-2][columna] != Board.border && boats[row-2][columna] != Board.barquito)									
+					{
+						boats[row-2][columna] = Board.barquito;
+						boats[row-1][columna] = Board.barquito;
+						boats[row][columna] = Board.barquito;
+						placed = true;
+					}						
+					
+					
+				}else if(!vert)
+				{	
+					//If both, the position at the left and the position at the right are locked, send an error message
+					if((boats[row][columna-1] == Board.barquito ||  boats[row][columna-1] == Board.border) && boats[row][columna+1] == Board.barquito)
+					{
+						System.out.println("The value of the row is incorrect, the boat will collide with other boats");
+					}		
+					//Checks if one position at left and one at the right of the main slot are free and puts a slot at each position
+					else if(boats[row][columna-1] != Board.border && boats[row][columna-1] != Board.barquito && boats[row][columna+1] != Board.border	&& boats[row][columna+1] != Board.barquito)
+					{	
+							boats[row][columna-1] = Board.barquito;
+							boats[row][columna] = Board.barquito;
+							boats[row][columna+1] = Board.barquito;	
+							placed = true;
+					}
+					//Checks if the two positions at the left of the main one are free and puts a slot of the boat at each one
+					else if((boats[row][columna-1] != Board.barquito && boats[row][columna-1] != Board.border) && (boats[row][columna+1]== Board.barquito) 
+							&& (boats[row][columna-2] != Board.barquito && boats[row][col-2] != Board.border))
+					{
+						boats[row][columna-2] = Board.barquito;
+						boats[row][columna-1] = Board.barquito;
+						boats[row][columna] = Board.barquito;
+						placed = true;
+					}
+					//If the position at the left is locked checks if the two position at the right of the main one are free to put a slot at each one
+					else if((boats[row][columna-1] == Board.barquito || boats[row][columna-1] == Board.border) && (boats[row][columna+1] != Board.barquito && boats[row][columna+1] != Board.border) && (boats[row][columna+2] != Board.barquito 
+							&& boats[row][columna+2] != Board.border ))
+					{
+						boats[row][columna] = Board.barquito;
+						boats[row][columna+1] = Board.barquito;
+						boats[row][columna+2] = Board.barquito;	
+						placed = true;
+					}
+					//If the position at the right is locked, checks if the two positions at the left ae free to put one slot at each one
+					else if((boats[row][columna+1] == Board.barquito || boats[row][columna+1] == Board.border) && (boats[row][columna-1] != Board.barquito && boats[row][columna-1] != Board.border) && (boats[row][columna-2] != Board.barquito 
+							&& boats[row][columna-2] != Board.border ))
+					{
+						boats[row][columna-2] = Board.barquito;
+						boats[row][columna-1] = Board.barquito;
+						boats[row][columna] = Board.barquito;
+						placed = true;
+					}	
+					
+				}
+				
+			
+			}else System.out.println("This position is already taken by another boat");
+				
+		}
+		else if(type == 3)
+		{
+			if(boats[row][columna] != Board.barquito)
+			{	
+				
+				//Checks if the two positions over and  one under are free in order to put the second,third and fourth slots of the boat
+				if(vert)
+				{	
+					//If the position under and over are locked, prints a message saying the value that's not correct
+					if ((boats[row-1][columna] == Board.barquito || boats[row-1][columna] == Board.border) && boats[row+1][columna] == Board.barquito )
+					{
+						System.out.println("The col of this boat is incorrect, it collides with another boats");
+					}
+					//Checks if the positions over and under are free to put 1 slot over and 1 slot under the main one
+					else if((boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito) && (boats[row+1][columna] != Board.border && boats[row+1][columna] != Board.barquito) && 
+							(boats[row-2][columna] != Board.border && boats[row-2][columna] != Board.barquito))
+					{	
+						boats[row-2][columna] = Board.barquito;
+						boats[row-1][columna] = Board.barquito;
+						boats[row][columna] = Board.barquito;							
+						boats[row+1][columna] = Board.barquito;
+						placed = true;
+					}
+					//If the position over is locked, checks if the three positions under are free to place the 3 slots.
+					if((boats[row-1][columna] == Board.border || boats[row-1][columna] == Board.barquito)&&(boats[row+1][columna] != Board.barquito &&
+							boats[row+2][columna] != Board.barquito && boats[row+3][columna] != Board.barquito))					
+					{						
+							boats[row][columna] = Board.barquito;
+							boats[row+1][columna] = Board.barquito;
+							boats[row+2][columna] = Board.barquito;
+							boats[row+3][columna] = Board.barquito;	
+							placed = true;
+					}
+					//If the position under is locked, checks if the three positions over are free to place the 3 slots.
+					else if((boats[row+1][columna] == Board.barquito || boats[row+1][columna] == Board.border) && (boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito)
+							&& (boats[row-2][columna] != Board.border && boats[row-2][columna] != Board.barquito)&&(boats[row-3][columna] != Board.border && boats[row-3][columna] != Board.barquito))								
+					{	
+						boats[row-3][columna] = Board.barquito;
+						boats[row-2][columna] = Board.barquito;
+						boats[row-1][columna] = Board.barquito;
+						boats[row][columna] = Board.barquito;
+						placed = true;
+					}			
+					//Checks if two positions under and one over are free to put the 3 slots left
+					else if((boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito) && (boats[row+1][columna] != Board.border && boats[row+1][columna] != Board.barquito) && 
+							(boats[row+2][columna] != Board.border && boats[row+2][columna] != Board.barquito))
+					{
+						boats[row-1][columna] = Board.barquito;
+						boats[row][columna] = Board.barquito;
+						boats[row+1][columna] = Board.barquito;
+						boats[row+2][columna] = Board.barquito;
+						placed = true;
+					}
+					
+				}else if(!vert)
+				{	
+					//If both, the position at the left and the position at the right are locked, send an error message
+					if((boats[row][columna-1] == Board.barquito ||  boats[row][columna-1] == Board.border) && boats[row][columna+1] == Board.barquito)
+					{
+						System.out.println("The value of the row is incorrect, the boat will collide with other boats");
+					}
+					//Checks if two position at left and one at the right of the main slot are free and puts a slot at each position
+					else if((boats[row][columna-1] != Board.border && boats[row][columna-1] != Board.barquito) 
+							&& (boats[row][columna-2] != Board.border && boats[row][columna-2] != Board.barquito)&& boats[row][columna+1] != Board.border && boats[row][columna+1] != Board.barquito)
+					{									
+							boats[row][columna-2] = Board.barquito;
+							boats[row][columna-1] = Board.barquito;
+							boats[row][columna] = Board.barquito;
+							boats[row][columna+1] = Board.barquito;	
+							placed = true;
+					}
+					// if the right position is locked, checks if the three positions at the left of the main one are free and puts a slot of the boat at each one
+					else if((boats[row][columna-1] != Board.barquito && boats[row][columna-1] != Board.border)&& ((boats[row][columna+1]== Board.barquito || boats[row][columna+1]== Board.border) 
+							&& (boats[row][columna-2] != Board.barquito && boats[row][columna-2] != Board.border) && (boats[row][columna-3] != Board.barquito && boats[row][columna-3] != Board.border)))
+					{							
+							boats[row][columna-3] = Board.barquito;
+							boats[row][columna-2] = Board.barquito;
+							boats[row][columna-1] = Board.barquito;
+							boats[row][columna] = Board.barquito;
+							placed = true;
+						
+					}
+					//If the position at the left is locked checks if the three position at the right of the main one are free to put a slot at each one
+					else if((boats[row][columna-1] == Board.barquito || boats[row][columna-1] == Board.border)&& (boats[row][columna+1] != Board.barquito && boats[row][columna+1] != Board.border )
+							&& (boats[row][columna+2] != Board.barquito && boats[row][columna+2] != Board.border) && (boats[row][columna+3] != Board.barquito && boats[row][columna+3] != Board.border))
+					{							
+							boats[row][columna] = Board.barquito;
+							boats[row][columna+1] = Board.barquito;
+							boats[row][columna+2] = Board.barquito;
+							boats[row][columna+3] = Board.barquito;
+							placed = true;
+						
+					}
+					else if((boats[row][columna-1] != Board.barquito && boats[row][columna-1] != Board.border ) && (boats[row][columna-2] == Board.barquito || boats[row][columna-2] == Board.border) 
+							&& (boats[row][columna+1] != Board.barquito && boats[row][columna+1] != Board.border ) && (boats[row][columna+2] != Board.barquito && boats[row][columna+2] != Board.border))
+					{
+						boats[row][columna-1] = Board.barquito;
+						boats[row][columna] = Board.barquito;
+						boats[row][columna+1] = Board.barquito;
+						boats[row][columna+2] = Board.barquito;
+						placed = true;
+					}												
+				}
+				
+			
+			}else System.out.println("This position is already taken by another boat");				
+		}		
+		return placed;
+	}
 }
