@@ -1,7 +1,5 @@
 package project1;
-import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.List;
 import java.util.Scanner;
 import project1.Board;
 
@@ -24,7 +22,7 @@ public class Boat {
 		this.lenght = lenght;
 		
 	}
-	public boolean isValidValue(int index)
+	public static boolean isValidValue(int index)
 	{
 		//Checks if the values of both variables row and col are correct
 		boolean valid = false;
@@ -35,27 +33,27 @@ public class Boat {
 		
 		return valid;
 	}
-	public boolean isValidVert(char vert)
+	public static boolean isValidVert(char vert)
 	{
 		//Checks if the value of vert is either of the two options we printed
-		boolean valid = false;
+		
 		if(vert == 'Y' || vert == 'N')
 		{
-			valid = true;
+			return true;
 		}
-		return valid;
+		return false;
 	}
-	public boolean isValidType(int type)
+	public static boolean isValidType(int type)
 	{
 		//Checks if the value of type is correct
-		boolean valid = false;
+		
 		if(type >=1 && type <=3)
 		{
-			valid = true;
+			return true;
 		}
-		return valid;
+		return false;
 	}
-	public int setLenght(int type)
+	public static int setLenght(int type)
 	{
 		//Sets the length of a boat according to his type
 		boolean valid = false;
@@ -70,37 +68,24 @@ public class Boat {
 				case 2: lenght = 3;
 						break;
 				case 3: lenght = 4;
-						break;
+						break;				
 			}
 			return lenght;
-		}
-		else lenght = -1;
-		return lenght;
+		}		
+		return -1;
 	}
-	public boolean isValidLenght(int lenght)
-	{
-		//Checks if the value of the length is correct
-		boolean valid = true;
-		if(lenght == -1)
-		{
-			valid = false;
-		}
-		return valid;
-	}
-	
 	
 	public char[][] createBoats() 
 	{			
 		char aux;
 		char boardPlayer[][];
 		boolean placed;
-		boolean isValid = false;
-		boolean isValidlenght= false;
+		boolean isValid = false;		
 		boardPlayer = new char [Board.max_dimension+1][Board.max_dimension+1];
 		boardPlayer= Player.initialitzacionBorder(boardPlayer);
 		int i = 0;
 		Scanner sc = new Scanner(System.in);
-		for(i=0;i<max_boats;i++)
+		for(i=1;i<max_boats+1;i++)
 		{
 			//Initialization of the type of the boat			
 			System.out.println("Insert your type of boat");
@@ -109,15 +94,14 @@ public class Boat {
 			
 			//Initialitzation of the argument lenght depending from the typeOfBoat
 			lenght = setLenght(typeOfBoat);
-			isValidlenght = isValidLenght(lenght);
-			while(!isValid && !isValidlenght)
+			
+			while(!isValid)
 			{
 				System.out.println("Error the value is incorrect");
 				System.out.println("Please, insert your type of boat again");
 				typeOfBoat = sc.nextInt();
 				isValid = isValidType(typeOfBoat);
 				lenght = setLenght(typeOfBoat);
-				isValidlenght = isValidLenght(lenght);
 			}				
 			//Initialization of the row of the boat
 			System.out.println("Insert the row of the boat");
@@ -166,8 +150,8 @@ public class Boat {
 			System.out.println("The value of placed is " + placed);
 			System.out.println("You have now " + i + " boats placed");		
 			
-			//Block of code that prints the board (Used to check)
-			Board.printBoard(boardPlayer);
+			//Function that prints the board (Used to check)
+			Board.printBoard(Board.board,boardPlayer);
 			
 		}
 		return boardPlayer;
@@ -178,30 +162,32 @@ public class Boat {
 		char boardIA[][];
 		boardIA = new char [Board.max_dimension+1][Board.max_dimension+1];
 		boardIA = Player.initialitzacionBorder(boardIA);
-		int aux = 0; 
+		int aux; 
 		int row;
 		int columna;
 		boolean vert;
 		boolean placed= false;
 		boolean isValid;
 		int type;
-		int large = 0;
-		for(int i = 0; i<max_boats;i++)
+		int large;
+		for(int i = 1; i<max_boats+1;i++)
 		{	
 			//Initialization of the arguments of a boat (done by the IA)				
 			//Just in case we check the IA creates the right values of row
 			row = ThreadLocalRandom.current().nextInt(1,10);
-			isValid = isValidType(row);
+			isValid = isValidValue(row);
 			while(!isValid)				
 			{
 				row = ThreadLocalRandom.current().nextInt(1,10);
+				isValid = isValidValue(row);
 			}
 			//Just in case we check the IA creates the right values of columna
 			columna = ThreadLocalRandom.current().nextInt(1,10);
-			isValid = isValidType(columna);
+			isValid = isValidValue(columna);
 			while(!isValid)				
 			{
 				columna = ThreadLocalRandom.current().nextInt(1,10);
+				isValid = isValidValue(columna);
 			}
 			//Just in case we check the IA creates the right values of type
 			type = ThreadLocalRandom.current().nextInt(1,4);
@@ -215,12 +201,10 @@ public class Boat {
 			{
 				vert = true;
 			}
-			else vert = false;
-			System.out.println("Hi my vert is " + vert);
+			else vert = false;			
 			large = setLenght(type);				
 			placed = canPlaceBoats(row,columna,type,vert,boardIA);	
-			//Print the board (just to check)
-			Board.printBoard(boardIA);
+			//Print the board (just to check)			
 		}			
 		return boardIA;
 		
@@ -228,9 +212,10 @@ public class Boat {
 	public static int countBoats(char [][] boats)		
 	{	//Function that counts the number of boats at each board to later see if the game's over
 		int boat = 0;
-		for(int i=1;i<Board.max_dimension+1;i++)
+		
+		for(int i=1;i<Board.max_dimension;i++)
 		{
-			for(int j =1; j<Board.max_dimension+1;j++)
+			for(int j =1; j<Board.max_dimension;j++)
 			{
 				if(boats[i][j] == Board.barquito)
 				{
@@ -243,6 +228,7 @@ public class Boat {
 	public boolean canPlaceBoats(int row,int columna,int type,boolean vert,char[][] boats)
 	{
 		//Function that checks if you can position a boat at the point the user or the IA generated.
+		
 		boolean placed = false;		
 		//Positioning of the boats in an alternative board that only contains their position to be checked when shoot
 		if(type == 1)
@@ -252,13 +238,9 @@ public class Boat {
 			{
 				if(vert)
 				{	
-					//Checks if the slots above and below are locked and prints an error message
-					if ((boats[row-1][columna] == Board.barquito || (boats[row-1][columna] == Board.border) && (boats[row+1][columna] == Board.barquito || boats[row+1][columna] == Board.border)))
-					{
-						System.out.println("The col of this boat is incorrect, it collides with another boats");
-					}
+					
 					//Checks if the positions over is free in order to put the second slot of the boat
-					else if(boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito)
+					if(boats[row-1][columna] != Board.border && boats[row-1][columna] != Board.barquito)
 					{
 						boats[row][columna] = Board.barquito;
 						boats[row-1][columna] = Board.barquito;
@@ -271,6 +253,11 @@ public class Boat {
 						boats[row][columna] = Board.barquito;
 						boats[row+1][columna] = Board.barquito;
 						placed = true;
+					}
+					//Checks if the slots above and below are locked and prints an error message
+					else if ((boats[row-1][columna] == Board.barquito || (boats[row-1][columna] == Board.border) && (boats[row+1][columna] == Board.barquito || boats[row+1][columna] == Board.border)))
+					{
+						System.out.println("The col of this boat is incorrect, it collides with another boats");
 					}
 					
 				}else if(!vert)
@@ -420,7 +407,7 @@ public class Boat {
 					}
 					//If the position over is locked, checks if the three positions under are free to place the 3 slots.
 					if((boats[row-1][columna] == Board.border || boats[row-1][columna] == Board.barquito)&&(boats[row+1][columna] != Board.barquito &&
-							boats[row+2][columna] != Board.barquito && boats[row+3][columna] != Board.barquito))					
+							(boats[row+2][columna] != Board.barquito && boats[row+2][columna] != Board.border ) && (boats[row+3][columna] != Board.barquito && boats[row+3][columna] != Board.border)))					
 					{						
 							boats[row][columna] = Board.barquito;
 							boats[row+1][columna] = Board.barquito;
@@ -504,4 +491,19 @@ public class Boat {
 		}		
 		return placed;
 	}
+
+	public static void showMatrix(char[][] boats)
+	{
+	
+		for(int i =0;i<Board.max_dimension+1;i++)
+		{
+			for(int j =0; j<Board.max_dimension+1;j++)
+			{
+				System.out.print(boats[i][j] + "\t");
+			}
+			System.out.println("\n");
+		}	
+		System.out.println("----------------------------------------------------------------------");
+	}
+	
 }
