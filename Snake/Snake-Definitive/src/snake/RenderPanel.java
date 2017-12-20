@@ -7,13 +7,12 @@ import java.awt.Point;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-/**
- * @author Jaryt Bustard
- */
 public class RenderPanel extends JPanel
 {
 
 	public static final Color GREEN = new Color(1666073);
+	public static final Color BLACK = new Color(1710618);
+	public static final Color PINK = new Color(15073395);
 
 	@Override
 	protected void paintComponent(Graphics g)
@@ -22,11 +21,11 @@ public class RenderPanel extends JPanel
 		
 		Snake snake = Snake.snake;
 
-		g.setColor(GREEN);
+		g.setColor(BLACK);
 		
 		g.fillRect(0, 0, 800, 700);
 
-		g.setColor(Color.BLUE);
+		g.setColor(PINK);
 
 		for (Point point : snake.snakeParts)
 		{
@@ -35,7 +34,7 @@ public class RenderPanel extends JPanel
 		
 		g.fillRect(snake.head.x * Snake.SCALE, snake.head.y * Snake.SCALE, Snake.SCALE, Snake.SCALE);
 		
-		g.setColor(Color.RED);
+		g.setColor(Color.WHITE);
 		
 		g.fillRect(snake.cherry.x * Snake.SCALE, snake.cherry.y * Snake.SCALE, Snake.SCALE, Snake.SCALE);
 		
