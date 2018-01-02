@@ -9,14 +9,12 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class RenderPanel extends JPanel
 {
-
-	public static final Color GREEN = new Color(1666073);
 	public static final Color BLACK = new Color(1710618);
 	public static final Color PINK = new Color(15073395);
 
 	@Override
 	protected void paintComponent(Graphics g)
-	{
+	{	
 		super.paintComponent(g);
 		
 		Snake snake = Snake.snake;
