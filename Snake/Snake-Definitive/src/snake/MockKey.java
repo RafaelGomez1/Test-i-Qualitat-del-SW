@@ -1,6 +1,5 @@
 package snake;
 import java.awt.event.KeyEvent;
-
 import java.awt.Component;
 
 

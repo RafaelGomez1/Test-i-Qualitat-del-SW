@@ -70,7 +70,7 @@ public class Snake implements ActionListener, KeyListener
 		ticks = 0;
 		direction = DOWN;
 		head = new Point(0, -1);
-		random = new Random();
+		random = new MockRandom();
 		snakeParts.clear();
 		cherry = new Point(random.nextInt(79), random.nextInt(66));
 		timer.start();
@@ -184,22 +184,23 @@ public class Snake implements ActionListener, KeyListener
 		snake = new Snake();
 	}
 
-	@Override
+	//@Override
 	public void keyPressed(KeyEvent e)
 	{
 		int i = e.getKeyCode();
-
+		
+		
 		if ((i == KeyEvent.VK_A || i == KeyEvent.VK_LEFT) && direction != RIGHT) {
-			direction = LEFT;
+			direction = LEFT;					
 		}
 		if ((i == KeyEvent.VK_D || i == KeyEvent.VK_RIGHT) && direction != LEFT) {
-			direction = RIGHT;
+			direction = RIGHT;			
 		}
 		if ((i == KeyEvent.VK_W || i == KeyEvent.VK_UP) && direction != DOWN) {
-			direction = UP;
+			direction = UP;			
 		}
 		if ((i == KeyEvent.VK_S || i == KeyEvent.VK_DOWN) && direction != UP) {
-			direction = DOWN;
+			direction = DOWN;			
 		}
 		if (i == KeyEvent.VK_SPACE) {
 			if (over) {
@@ -207,7 +208,7 @@ public class Snake implements ActionListener, KeyListener
 			} else {
 				paused = !paused;
 			}
-		}
+		}		
 	}
 
 	@Override

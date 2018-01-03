@@ -67,7 +67,7 @@ public class SnakeTest {
 	@Test 
 	public void keyPressed() {
 			
-		
+		//En principio (hasta la tutoria con Xavi) no se puede testear
 	}
 	
 	@Test
@@ -115,7 +115,7 @@ public class SnakeTest {
 	
 	@Test 
 	public void setCherry() {
-		/*
+		
 		int x = 1;
 		int y = 1;
 		
@@ -128,7 +128,7 @@ public class SnakeTest {
 			Snake.setCherry(cherry);
 			
 		}
-		*/
+		
 	}
 	
 }
