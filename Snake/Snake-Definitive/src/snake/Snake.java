@@ -70,7 +70,7 @@ public class Snake implements ActionListener, KeyListener
 		ticks = 0;
 		direction = DOWN;
 		head = new Point(0, -1);
-		random = new MockRandom();
+		random = new Random();
 		snakeParts.clear();
 		cherry = new Point(random.nextInt(79), random.nextInt(66));
 		timer.start();

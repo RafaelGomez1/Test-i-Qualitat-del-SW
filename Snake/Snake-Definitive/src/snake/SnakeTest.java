@@ -112,23 +112,7 @@ public class SnakeTest {
 			}
 		}*/
 	}
-	
-	@Test 
-	public void setCherry() {
 		
-		int x = 1;
-		int y = 1;
-		
-		boolean isValid;
-		
-		//Creation of the points that will be tested		
-		Point cherry = new Point(x,y);
-		while(x < 50000) {
-			
-			Snake.setCherry(cherry);
-			
-		}
-		
-	}
-	
 }
+	
+

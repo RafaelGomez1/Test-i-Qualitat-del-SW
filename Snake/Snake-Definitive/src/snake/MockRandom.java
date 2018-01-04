@@ -2,25 +2,45 @@ package snake;
 
 import java.util.Random;
 
+@SuppressWarnings("serial")
 public class MockRandom extends Random {
 
-	int maxRow = 79;
-	int maxCol = 66;
-	int rowState = 1;
-	int colState = 1;
-	boolean pairCall = true;
-	boolean oddCall = false;
+	private int maxRow = 78;
+	final int maxCol = 65;
+	private int rowState = 2;
+	private int colState = 2;
+	private boolean pairCall = true;
 		
 	public int nextInt(int max) {
 		
-		return max/2;
+		return decider();
 	}
 	
 	public int decider() {
 		
-		
-		
-	
-		return 0;
+		int temp = 0;	
+		if (pairCall) {
+			pairCall = false;
+			return rowState;
+			} else if (!pairCall) {				
+				//faltan comprobaciones
+				if(colState >= maxCol - 2) {
+					temp = rowState;
+					if(temp >= maxRow - 2) {
+						return 0;
+					} else {
+						rowState++;
+						colState = 1;
+					}
+				} else {
+				pairCall = true;
+				temp = colState;
+				colState++;				
+				return temp;				
+			}		
+		}
+		System.out.println("Yolooo");
+		System.out.println("The call of this function is pair? : " + pairCall);
+		return 25;
 	}
 }
