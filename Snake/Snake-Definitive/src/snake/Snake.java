@@ -35,13 +35,15 @@ public class Snake implements ActionListener, KeyListener
 
 	public static int tailLength;
 
-	public int time;
+	public static int time;
 
 	public Point head, cherry;
 
 	public static Random random;
 
-	public boolean over, paused;
+	public static boolean over;
+
+	public boolean paused;
 
 	public Dimension dim;
 	
@@ -81,7 +83,7 @@ public class Snake implements ActionListener, KeyListener
 		//function that reacts according to the players action (movement)
 		renderPanel.repaint();
 		ticks++;
-		head = checkDirection(snakeParts, head, ticks, paused, direction);
+		head = checkDirection(snakeParts, head, ticks, paused,over, direction);
 		boolean valid = checkCherry(head,cherry);		
 		if (valid) {
 			setCherry(cherry);
@@ -111,7 +113,7 @@ public class Snake implements ActionListener, KeyListener
 		return false;
 	}
 	
-	public Point checkDirection(ArrayList<Point> snakeParts, Point head, int ticks,boolean paused, int direction) {
+	public static Point checkDirection(ArrayList<Point> snakeParts, Point head, int ticks,boolean paused, boolean over, int direction) {
 		
 		//checks the direction of the snake and moves it accordingly
 		if (ticks % 2 == 0 && head != null && !over && !paused) {
@@ -121,28 +123,28 @@ public class Snake implements ActionListener, KeyListener
 				if(isValidPosition(head, snakeParts, direction)) {				
 						head = new Point(head.x, head.y - 1);					
 				} else {
-					over = true;
+					setOver(true);					
 				}
 			}
 			if (direction == DOWN) {
 				if(isValidPosition(head, snakeParts, direction)) {
 					head = new Point(head.x, head.y + 1);					
 				} else {
-					over = true;
+					setOver(true);
 				}
 			}
 			if (direction == LEFT) {
 				if(isValidPosition(head, snakeParts, direction)) {
 					head = new Point(head.x - 1, head.y);
 				} else {
-					over = true;
+					setOver(true);					
 				}
 			}
 			if (direction == RIGHT)	{
 				if(isValidPosition(head, snakeParts, direction)) {
 					head = new Point(head.x + 1, head.y);
 				} else {
-					over = true;
+					setOver(true);
 				}
 			}
 			if (snakeParts.size() > tailLength) {
@@ -209,6 +211,9 @@ public class Snake implements ActionListener, KeyListener
 				paused = !paused;
 			}
 		}		
+	}
+	public static void setOver(boolean value) {
+		Snake.over = value;
 	}
 
 	@Override

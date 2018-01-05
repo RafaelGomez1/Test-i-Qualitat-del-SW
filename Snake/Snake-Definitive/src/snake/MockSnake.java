@@ -31,10 +31,12 @@ public class MockSnake extends ArrayList<Point> {
 			//this.setSnake(validSnakeLeft());
 			//return this.getSnake();
 		} else if (state == 3) {
-			state = 0;
+			state = 4;
 			return validSnakeRight();
 			//this.setSnake(validSnakeRight());
 			//return this.getSnake();
+		} else if (state == 4) {
+			state = 0;
 		}
 		return null;
 	}

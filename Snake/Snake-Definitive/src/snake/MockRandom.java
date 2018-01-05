@@ -22,8 +22,7 @@ public class MockRandom extends Random {
 		if (pairCall) {
 			pairCall = false;
 			return rowState;
-			} else if (!pairCall) {				
-				//faltan comprobaciones
+		} else if (!pairCall) {
 				if(colState >= maxCol - 2) {
 					temp = rowState;
 					if(temp >= maxRow - 2) {
@@ -39,8 +38,6 @@ public class MockRandom extends Random {
 				return temp;				
 			}		
 		}
-		System.out.println("Yolooo");
-		System.out.println("The call of this function is pair? : " + pairCall);
 		return 25;
-	}
+	}	
 }
